@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { getProfile, updateProfile, updatePassword } from "../api/user";
 import { useAuth } from "../context/AuthContext";
 import Navbar from "../components/Navbar";
 
 const ProfilePage = () => {
-  const { logout, setProfile: setAuthProfile } = useAuth();
-  const navigate = useNavigate();
+  const { setProfile: setAuthProfile } = useAuth();
 
   const [loading, setLoading] = useState(true);
 
@@ -37,6 +35,9 @@ const ProfilePage = () => {
       .finally(() => setLoading(false));
   }, []);
 
+  const inputClass = (field: string, errors: Record<string, string>) =>
+    `w-full border rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-600 transition-colors ${errors[field] ? "border-red-400 dark:border-red-600" : "border-gray-200 dark:border-gray-700"}`;
+
   const validateProfile = () => {
     const errors: Record<string, string> = {};
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -59,7 +60,6 @@ const ProfilePage = () => {
     try {
       const updated = await updateProfile({ email, username });
       setAuthProfile(updated);
-      setAuthProfile(updated); // ← met à jour la Navbar immédiatement
       setProfileSuccess("Profil mis à jour avec succès !");
     } catch (err: any) {
       if (err.response?.status === 409) {
@@ -118,54 +118,57 @@ const ProfilePage = () => {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-400">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center text-gray-400 transition-colors">
         Chargement...
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
       <Navbar />
 
       <main className="max-w-2xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold text-gray-800 mb-8">Mon profil</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100 mb-8">
+          Mon profil
+        </h2>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
-          <h3 className="text-base font-semibold text-gray-700 mb-4">
+        {/* Infos personnelles */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 mb-4 transition-colors">
+          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-5">
             Informations personnelles
           </h3>
 
           {profileErrors.global && (
-            <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg mb-4">
+            <div className="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 text-sm px-4 py-3 rounded-lg mb-4 border border-red-100 dark:border-red-900">
               {profileErrors.global}
             </div>
           )}
           {profileSuccess && (
-            <div className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-lg mb-4">
+            <div className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 text-sm px-4 py-3 rounded-lg mb-4 border border-green-100 dark:border-green-900">
               {profileSuccess}
             </div>
           )}
 
           <form onSubmit={handleProfileSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
                 Email
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${profileErrors.email ? "border-red-400" : "border-gray-200"}`}
+                className={inputClass("email", profileErrors)}
               />
               {profileErrors.email && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-red-500 dark:text-red-400 text-xs mt-1">
                   {profileErrors.email}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
                 Pseudo
               </label>
               <input
@@ -173,20 +176,20 @@ const ProfilePage = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="MonPseudo"
-                className={`w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${profileErrors.username ? "border-red-400" : "border-gray-200"}`}
+                className={inputClass("username", profileErrors)}
               />
               {profileErrors.username && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-red-500 dark:text-red-400 text-xs mt-1">
                   {profileErrors.username}
                 </p>
               )}
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-1">
               <button
                 type="submit"
                 disabled={profileLoading}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition disabled:opacity-50"
+                className="bg-green-700 hover:bg-green-800 dark:bg-green-700 dark:hover:bg-green-600 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors disabled:opacity-50"
               >
                 {profileLoading ? "Enregistrement..." : "Sauvegarder"}
               </button>
@@ -194,25 +197,26 @@ const ProfilePage = () => {
           </form>
         </div>
 
-        <div className="bg-white border border-gray-200 rounded-xl p-6">
-          <h3 className="text-base font-semibold text-gray-700 mb-4">
+        {/* Mot de passe */}
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 transition-colors">
+          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-5">
             Changer le mot de passe
           </h3>
 
           {passwordErrors.global && (
-            <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-lg mb-4">
+            <div className="bg-red-50 dark:bg-red-950 text-red-600 dark:text-red-400 text-sm px-4 py-3 rounded-lg mb-4 border border-red-100 dark:border-red-900">
               {passwordErrors.global}
             </div>
           )}
           {passwordSuccess && (
-            <div className="bg-green-50 text-green-600 text-sm px-4 py-3 rounded-lg mb-4">
+            <div className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-400 text-sm px-4 py-3 rounded-lg mb-4 border border-green-100 dark:border-green-900">
               {passwordSuccess}
             </div>
           )}
 
           <form onSubmit={handlePasswordSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
                 Mot de passe actuel
               </label>
               <input
@@ -220,17 +224,17 @@ const ProfilePage = () => {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••"
-                className={`w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${passwordErrors.currentPassword ? "border-red-400" : "border-gray-200"}`}
+                className={inputClass("currentPassword", passwordErrors)}
               />
               {passwordErrors.currentPassword && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-red-500 dark:text-red-400 text-xs mt-1">
                   {passwordErrors.currentPassword}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
                 Nouveau mot de passe
               </label>
               <input
@@ -238,17 +242,17 @@ const ProfilePage = () => {
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="••••••••"
-                className={`w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${passwordErrors.newPassword ? "border-red-400" : "border-gray-200"}`}
+                className={inputClass("newPassword", passwordErrors)}
               />
               {passwordErrors.newPassword && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-red-500 dark:text-red-400 text-xs mt-1">
                   {passwordErrors.newPassword}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
                 Confirmer le mot de passe
               </label>
               <input
@@ -256,37 +260,25 @@ const ProfilePage = () => {
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                 placeholder="••••••••"
-                className={`w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${passwordErrors.confirmNewPassword ? "border-red-400" : "border-gray-200"}`}
+                className={inputClass("confirmNewPassword", passwordErrors)}
               />
               {passwordErrors.confirmNewPassword && (
-                <p className="text-red-500 text-xs mt-1">
+                <p className="text-red-500 dark:text-red-400 text-xs mt-1">
                   {passwordErrors.confirmNewPassword}
                 </p>
               )}
             </div>
 
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-1">
               <button
                 type="submit"
                 disabled={passwordLoading}
-                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition disabled:opacity-50"
+                className="bg-green-700 hover:bg-green-800 dark:bg-green-700 dark:hover:bg-green-600 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors disabled:opacity-50"
               >
                 {passwordLoading ? "Mise à jour..." : "Changer le mot de passe"}
               </button>
             </div>
           </form>
-        </div>
-
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={() => {
-              logout();
-              navigate("/login");
-            }}
-            className="text-sm text-red-500 hover:text-red-700 transition"
-          >
-            Se déconnecter
-          </button>
         </div>
       </main>
     </div>
