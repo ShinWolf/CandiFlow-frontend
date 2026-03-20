@@ -4,8 +4,21 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ApplicationsPage from "./pages/ApplicationsPage";
 import DashboardPage from "./pages/DashboardPage";
+import ProfilePage from "./pages/ProfilePage";
+import { useAuth } from "./context/AuthContext";
+import { useEffect } from "react";
+import { getProfile } from "./api/user";
 
 function App() {
+  const { isAuthenticated, setProfile } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      getProfile()
+        .then(setProfile)
+        .catch(() => {});
+    }
+  }, [isAuthenticated]);
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
@@ -27,6 +40,14 @@ function App() {
         }
       />
       <Route path="*" element={<Navigate to="/applications" />} />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
