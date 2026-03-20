@@ -10,6 +10,7 @@ import {
 import { getStats, type DashboardStats } from "../api/dashboard";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 const COLORS = {
   APPLIED: "#3b82f6",
@@ -56,23 +57,7 @@ const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-800">CandiFlow</h1>
-        <div className="flex items-center gap-4">
-          <Link
-            to="/applications"
-            className="text-sm text-gray-500 hover:text-blue-600 transition"
-          >
-            Candidatures
-          </Link>
-          <button
-            onClick={logout}
-            className="text-sm text-gray-500 hover:text-red-500 transition"
-          >
-            Déconnexion
-          </button>
-        </div>
-      </header>
+      <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Dashboard</h2>
