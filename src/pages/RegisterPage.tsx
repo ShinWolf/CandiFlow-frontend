@@ -5,6 +5,7 @@ import { register as registerApi } from "../api/auth";
 const RegisterPage = () => {
   const navigate = useNavigate();
 
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -14,6 +15,10 @@ const RegisterPage = () => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
+
+    if (!username) newErrors.username = "Le pseudo est obligatoire";
+    else if (username.length < 3 || username.length > 30)
+      newErrors.username = "Le pseudo doit contenir entre 3 et 30 caractères";
 
     if (!email) newErrors.email = "L'email est obligatoire";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
@@ -46,11 +51,14 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      await registerApi({ email, password });
+      await registerApi({ username, email, password });
       navigate("/login");
     } catch (err: any) {
       if (err.response?.status === 409) {
-        setErrors({ email: "Cet email est déjà utilisé" });
+        const msg = err.response.data.error;
+        if (msg.includes("Email"))
+          setErrors({ email: "Cet email est déjà utilisé" });
+        else setErrors({ username: "Ce pseudo est déjà utilisé" });
       } else {
         setGlobalError("Une erreur est survenue, réessaie plus tard.");
       }
@@ -76,6 +84,21 @@ const RegisterPage = () => {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Pseudo
+            </label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="MonPseudo"
+              className={`w-full border rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.username ? "border-red-400" : "border-gray-200"}`}
+            />
+            {errors.username && (
+              <p className="text-red-500 text-xs mt-1">{errors.username}</p>
+            )}
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
