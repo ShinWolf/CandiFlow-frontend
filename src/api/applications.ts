@@ -12,7 +12,7 @@ export const getApplications = async (
   company?: string,
 ): Promise<ApplicationPageResponse> => {
   const response = await axiosInstance.get<ApplicationPageResponse>(
-    "/applications",
+    "/api/applications",
     {
       params: { page, size, status, company },
     },
@@ -21,14 +21,19 @@ export const getApplications = async (
 };
 
 export const getApplication = async (id: number): Promise<Application> => {
-  const response = await axiosInstance.get<Application>(`/applications/${id}`);
+  const response = await axiosInstance.get<Application>(
+    `/api/applications/${id}`,
+  );
   return response.data;
 };
 
 export const createApplication = async (
   data: ApplicationRequest,
 ): Promise<Application> => {
-  const response = await axiosInstance.post<Application>("/applications", data);
+  const response = await axiosInstance.post<Application>(
+    "/api/applications",
+    data,
+  );
   return response.data;
 };
 
@@ -37,12 +42,12 @@ export const updateApplication = async (
   data: ApplicationRequest,
 ): Promise<Application> => {
   const response = await axiosInstance.put<Application>(
-    `/applications/${id}`,
+    `/api/applications/${id}`,
     data,
   );
   return response.data;
 };
 
 export const deleteApplication = async (id: number): Promise<void> => {
-  await axiosInstance.delete(`/applications/${id}`);
+  await axiosInstance.delete(`/api/applications/${id}`);
 };

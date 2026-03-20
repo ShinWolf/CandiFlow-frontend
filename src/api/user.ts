@@ -16,7 +16,7 @@ export interface UpdatePasswordRequest {
 }
 
 export const getProfile = async (): Promise<UserProfile> => {
-  const response = await axiosInstance.get<UserProfile>("/user/profile");
+  const response = await axiosInstance.get<UserProfile>("/api/user/profile");
   return response.data;
 };
 
@@ -24,7 +24,7 @@ export const updateProfile = async (
   data: UpdateProfileRequest,
 ): Promise<UserProfile> => {
   const response = await axiosInstance.patch<UserProfile>(
-    "/user/profile",
+    "/api/user/profile",
     data,
   );
   return response.data;
@@ -33,5 +33,5 @@ export const updateProfile = async (
 export const updatePassword = async (
   data: UpdatePasswordRequest,
 ): Promise<void> => {
-  await axiosInstance.patch("/user/password", data);
+  await axiosInstance.patch("/api/user/password", data);
 };

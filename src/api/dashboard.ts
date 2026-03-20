@@ -11,6 +11,8 @@ export interface DashboardStats {
 }
 
 export const getStats = async (): Promise<DashboardStats> => {
-  const response = await axiosInstance.get<DashboardStats>("/dashboard/stats");
+  const response = await axiosInstance.get<DashboardStats>(
+    "/api/dashboard/stats",
+  );
   return response.data;
 };
