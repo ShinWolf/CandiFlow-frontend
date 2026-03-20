@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
 import { getApplications, deleteApplication } from "../api/applications";
 import type { Application, ApplicationPageResponse } from "../types";
 import ApplicationCard from "../components/ApplicationCard";
 import ApplicationModal from "../components/ApplicationModal";
-import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const STATUS_OPTIONS = ["", "APPLIED", "INTERVIEW", "OFFER", "REJECTED"];
-
 const STATUS_LABELS: Record<string, string> = {
-  "": "Tous",
+  "": "Tous les statuts",
   APPLIED: "Candidaté",
   INTERVIEW: "Entretien",
   OFFER: "Offre",
@@ -18,8 +15,6 @@ const STATUS_LABELS: Record<string, string> = {
 };
 
 const ApplicationsPage = () => {
-  const { logout } = useAuth();
-
   const [data, setData] = useState<ApplicationPageResponse | null>(null);
   const [page, setPage] = useState(0);
   const [status, setStatus] = useState("");
@@ -66,19 +61,18 @@ const ApplicationsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors duration-200">
       <Navbar />
 
       <main className="max-w-4xl mx-auto px-4 py-8">
-        {/* Titre + bouton ajouter */}
+        {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800">
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
               Mes candidatures
             </h2>
             {data && (
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
                 {data.totalElements} candidature
                 {data.totalElements > 1 ? "s" : ""}
               </p>
@@ -86,7 +80,7 @@ const ApplicationsPage = () => {
           </div>
           <button
             onClick={() => setModalOpen(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2.5 rounded-lg transition"
+            className="bg-green-700 hover:bg-green-800 dark:bg-green-700 dark:hover:bg-green-600 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors"
           >
             + Ajouter
           </button>
@@ -105,7 +99,7 @@ const ApplicationsPage = () => {
                 setPage(0);
               }
             }}
-            className="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 flex-1 min-w-48"
+            className="flex-1 min-w-48 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-600 transition-colors"
           />
           <select
             value={status}
@@ -113,7 +107,7 @@ const ApplicationsPage = () => {
               setStatus(e.target.value);
               setPage(0);
             }}
-            className="border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-600 transition-colors"
           >
             {STATUS_OPTIONS.map((s) => (
               <option key={s} value={s}>
@@ -125,13 +119,23 @@ const ApplicationsPage = () => {
 
         {/* Liste */}
         {loading ? (
-          <p className="text-center text-gray-400 py-12">Chargement...</p>
+          <div className="text-center text-gray-400 dark:text-gray-600 py-16">
+            Chargement...
+          </div>
         ) : data?.content.length === 0 ? (
-          <p className="text-center text-gray-400 py-12">
-            Aucune candidature trouvée.
-          </p>
+          <div className="text-center py-16">
+            <p className="text-gray-400 dark:text-gray-600 text-sm">
+              Aucune candidature trouvée.
+            </p>
+            <button
+              onClick={() => setModalOpen(true)}
+              className="mt-4 text-sm text-green-700 dark:text-green-400 hover:underline"
+            >
+              Ajouter ta première candidature
+            </button>
+          </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {data?.content.map((app) => (
               <ApplicationCard
                 key={app.id}
@@ -145,29 +149,28 @@ const ApplicationsPage = () => {
 
         {/* Pagination */}
         {data && data.totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-8">
+          <div className="flex justify-center items-center gap-3 mt-8">
             <button
               onClick={() => setPage((p) => p - 1)}
               disabled={page === 0}
-              className="px-4 py-2 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-100 transition"
+              className="px-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:border-green-500 dark:hover:border-green-600 hover:text-green-700 dark:hover:text-green-400 transition-colors"
             >
-              Précédent
+              ← Précédent
             </button>
-            <span className="px-4 py-2 text-sm text-gray-500">
+            <span className="text-sm text-gray-400 dark:text-gray-500">
               {page + 1} / {data.totalPages}
             </span>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page + 1 >= data.totalPages}
-              className="px-4 py-2 text-sm border border-gray-200 rounded-lg disabled:opacity-40 hover:bg-gray-100 transition"
+              className="px-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:border-green-500 dark:hover:border-green-600 hover:text-green-700 dark:hover:text-green-400 transition-colors"
             >
-              Suivant
+              Suivant →
             </button>
           </div>
         )}
       </main>
 
-      {/* Modal */}
       {modalOpen && (
         <ApplicationModal onClose={handleModalClose} editTarget={editTarget} />
       )}
