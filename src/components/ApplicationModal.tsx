@@ -26,6 +26,7 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -37,8 +38,16 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+
+    const validationErrors = validate();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
+    setErrors({});
+    setLoading(true);
     try {
       if (editTarget) {
         await updateApplication(editTarget.id, form);
@@ -51,6 +60,20 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const validate = () => {
+    const newErrors: Record<string, string> = {};
+    if (!form.company.trim())
+      newErrors.company = "L'entreprise est obligatoire";
+    if (!form.jobTitle.trim()) newErrors.jobTitle = "Le poste est obligatoire";
+    if (!form.status) newErrors.status = "Le statut est obligatoire";
+    if (!form.appliedAt) newErrors.appliedAt = "La date est obligatoire";
+    if (form.offerUrl && !/^https?:\/\/.+/.test(form.offerUrl))
+      newErrors.offerUrl = "L'URL doit commencer par http:// ou https://";
+    if (form.notes && form.notes.length > 500)
+      newErrors.notes = "Les notes ne peuvent pas dépasser 500 caractères";
+    return newErrors;
   };
 
   return (
@@ -79,6 +102,9 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
                 required
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {errors.company && (
+                <p className="text-red-500 text-xs mt-1">{errors.company}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -91,6 +117,9 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
                 required
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {errors.jobTitle && (
+                <p className="text-red-500 text-xs mt-1">{errors.jobTitle}</p>
+              )}
             </div>
           </div>
 
@@ -111,6 +140,9 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
                   </option>
                 ))}
               </select>
+              {errors.status && (
+                <p className="text-red-500 text-xs mt-1">{errors.status}</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -124,6 +156,9 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
                 required
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+              {errors.appliedAt && (
+                <p className="text-red-500 text-xs mt-1">{errors.appliedAt}</p>
+              )}
             </div>
           </div>
 
@@ -138,6 +173,9 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
               placeholder="https://..."
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+            {errors.offerUrl && (
+              <p className="text-red-500 text-xs mt-1">{errors.offerUrl}</p>
+            )}
           </div>
 
           <div>
@@ -152,6 +190,9 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
               placeholder="Notes personnelles..."
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             />
+            {errors.notes && (
+              <p className="text-red-500 text-xs mt-1">{errors.notes}</p>
+            )}
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
