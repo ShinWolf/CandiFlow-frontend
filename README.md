@@ -1,73 +1,147 @@
-# React + TypeScript + Vite
+# CandiFlow — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web pour la gestion de candidatures, développée en React + TypeScript + Tailwind CSS.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack technique
 
-## React Compiler
+- React 19
+- TypeScript
+- Vite
+- Tailwind CSS 4
+- Axios
+- React Router
+- Recharts
+- Lucide React
+- Docker + Nginx
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## Prérequis
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js 24+
+- npm
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Installation locale
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Cloner le projet
+
+```bash
+git clone https://github.com/ShinWolf/CandiFlow-frontend.git
+cd CandiFlow-frontend
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Installer les dépendances
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+### 3. Configurer l'URL de l'API
+
+Par défaut le frontend appelle `http://localhost:8080`. Pour changer l'URL en production, crée un fichier `.env.production` :
+
+```env
+VITE_API_URL=https://api.candiflow.ericfief.fr
+```
+
+### 4. Lancer en développement
+
+```bash
+npm run dev
+```
+
+L'app est accessible sur `http://localhost:5173`.
+
+---
+
+## Build production
+
+```bash
+npm run build
+```
+
+---
+
+## Lancer avec Docker
+
+```bash
+docker build -t candiflow-frontend .
+docker run -d --name candiflow-frontend -p 3000:80 --restart unless-stopped candiflow-frontend
+```
+
+L'app est accessible sur `http://localhost:3000`.
+
+---
+
+## Fonctionnalités
+
+- Authentification JWT (register / login)
+- Gestion des candidatures (créer, modifier, supprimer)
+- Filtres par statut et recherche par entreprise
+- Pagination
+- Dashboard avec statistiques et graphique donut
+- Profil utilisateur (modifier email, pseudo, mot de passe)
+- Mode sombre
+- Validation des formulaires
+- Gestion des erreurs
+
+---
+
+## Structure du projet
+
+```
+src/
+├── api/              # Appels HTTP (axios)
+│   ├── axiosInstance.ts
+│   ├── auth.ts
+│   ├── applications.ts
+│   ├── dashboard.ts
+│   └── user.ts
+├── components/       # Composants réutilisables
+│   ├── Navbar.tsx
+│   ├── ApplicationCard.tsx
+│   └── ApplicationModal.tsx
+├── context/          # Contextes React
+│   ├── AuthContext.tsx
+│   └── ThemeContext.tsx
+├── pages/            # Pages
+│   ├── LoginPage.tsx
+│   ├── RegisterPage.tsx
+│   ├── ApplicationsPage.tsx
+│   ├── DashboardPage.tsx
+│   └── ProfilePage.tsx
+├── routes/           # Routes protégées
+│   └── ProtectedRoute.tsx
+└── types/            # Interfaces TypeScript
+    └── index.ts
+```
+
+---
+
+## Déploiement
+
+Le projet utilise **GitHub Actions** pour le déploiement automatique sur push sur `main`.
+
+### Secrets GitHub requis
+
+| Secret        | Description     |
+| ------------- | --------------- |
+| `VPS_HOST`    | IP du VPS       |
+| `VPS_USER`    | Utilisateur SSH |
+| `VPS_SSH_KEY` | Clé privée SSH  |
+
+### Nginx
+
+Le fichier `nginx.conf` configure le serveur pour servir l'app React en SPA (toutes les routes redirigées vers `index.html`).
+
+---
+
+## Variables d'environnement
+
+| Variable       | Description          | Défaut                  |
+| -------------- | -------------------- | ----------------------- |
+| `VITE_API_URL` | URL de l'API backend | `http://localhost:8080` |
