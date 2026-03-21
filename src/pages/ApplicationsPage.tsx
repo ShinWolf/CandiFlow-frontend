@@ -87,7 +87,7 @@ const ApplicationsPage = () => {
         </div>
 
         {/* Filtres */}
-        <div className="flex gap-3 mb-6 flex-wrap">
+        <div className="flex flex-col sm:flex-row gap-2 mb-6">
           <input
             type="text"
             placeholder="Rechercher une entreprise..."
@@ -99,7 +99,7 @@ const ApplicationsPage = () => {
                 setPage(0);
               }
             }}
-            className="flex-1 min-w-48 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-600 transition-colors"
+            className="flex-1 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-600 transition-colors"
           />
           <select
             value={status}
@@ -107,7 +107,7 @@ const ApplicationsPage = () => {
               setStatus(e.target.value);
               setPage(0);
             }}
-            className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-600 transition-colors"
+            className="border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-600 transition-colors sm:w-48"
           >
             {STATUS_OPTIONS.map((s) => (
               <option key={s} value={s}>
