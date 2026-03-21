@@ -24,9 +24,9 @@ interface Props {
 
 const ApplicationCard = ({ application, onEdit, onDelete }: Props) => {
   return (
-    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl px-5 py-4 flex items-center justify-between gap-4 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
+    <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl px-4 py-3.5 flex items-center justify-between gap-3 hover:border-gray-200 dark:hover:border-gray-700 transition-colors">
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2.5 mb-1">
+        <div className="flex items-center gap-2 mb-1 flex-wrap">
           <h3 className="font-medium text-gray-800 dark:text-gray-100 truncate">
             {application.company}
           </h3>
@@ -36,9 +36,14 @@ const ApplicationCard = ({ application, onEdit, onDelete }: Props) => {
             {STATUS_LABELS[application.status]}
           </span>
         </div>
-        <p className="text-sm text-gray-400 dark:text-gray-500 truncate">
-          {application.jobTitle}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm text-gray-400 dark:text-gray-500 truncate">
+            {application.jobTitle}
+          </p>
+          <span className="text-xs text-gray-300 dark:text-gray-600 shrink-0 hidden sm:block">
+            {application.appliedAt}
+          </span>
+        </div>
         {application.notes && (
           <p className="text-xs text-gray-300 dark:text-gray-600 mt-1 truncate">
             {application.notes}
@@ -47,10 +52,6 @@ const ApplicationCard = ({ application, onEdit, onDelete }: Props) => {
       </div>
 
       <div className="flex items-center gap-1 shrink-0">
-        <span className="text-xs text-gray-300 dark:text-gray-600 mr-2">
-          {application.appliedAt}
-        </span>
-
         {application.offerUrl && (
           <a
             href={application.offerUrl}
@@ -62,7 +63,6 @@ const ApplicationCard = ({ application, onEdit, onDelete }: Props) => {
             <ExternalLink size={14} />
           </a>
         )}
-
         <button
           onClick={() => onEdit(application)}
           className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-green-700 dark:hover:text-green-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
@@ -70,7 +70,6 @@ const ApplicationCard = ({ application, onEdit, onDelete }: Props) => {
         >
           <Pencil size={14} />
         </button>
-
         <button
           onClick={() => onDelete(application.id)}
           className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
