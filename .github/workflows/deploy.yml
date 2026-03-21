@@ -18,7 +18,8 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd ~/frontend
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             docker stop candiflow-frontend || true
             docker rm candiflow-frontend || true
             docker build -t candiflow-frontend .
