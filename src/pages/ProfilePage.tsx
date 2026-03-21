@@ -25,6 +25,9 @@ const ProfilePage = () => {
   const [passwordSuccess, setPasswordSuccess] = useState("");
   const [passwordLoading, setPasswordLoading] = useState(false);
 
+  const hasEmoji = (str: string) => /\p{So}|\p{Cs}/u.test(str);
+  const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
   useEffect(() => {
     getProfile()
       .then((data) => {
@@ -40,10 +43,12 @@ const ProfilePage = () => {
 
   const validateProfile = () => {
     const errors: Record<string, string> = {};
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      errors.email = "L'email n'est pas valide";
+    if (!email) errors.email = "L'email est obligatoire";
+    else if (!emailRegex.test(email)) errors.email = "L'email n'est pas valide";
     if (username && (username.length < 3 || username.length > 30))
       errors.username = "Le pseudo doit contenir entre 3 et 30 caractères";
+    else if (username && hasEmoji(username))
+      errors.username = "Les emojis ne sont pas autorisés";
     return errors;
   };
 
@@ -168,14 +173,22 @@ const ProfilePage = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
-                Pseudo
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Pseudo
+                </label>
+                <span
+                  className={`text-xs ${username.length > 30 ? "text-red-500" : "text-gray-400 dark:text-gray-500"}`}
+                >
+                  {username.length} / 30
+                </span>
+              </div>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="MonPseudo"
+                maxLength={30}
                 className={inputClass("username", profileErrors)}
               />
               {profileErrors.username && (
