@@ -29,7 +29,7 @@ const ApplicationsPage = () => {
     try {
       const result = await getApplications(
         page,
-        10,
+        5,
         status || undefined,
         search || undefined,
       );
@@ -149,23 +149,51 @@ const ApplicationsPage = () => {
 
         {/* Pagination */}
         {data && data.totalPages > 1 && (
-          <div className="flex justify-center items-center gap-3 mt-8">
+          <div className="flex justify-center items-center gap-2 mt-6">
+            <button
+              onClick={() => setPage(0)}
+              disabled={page === 0}
+              className="px-3 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:border-green-500 dark:hover:border-green-600 hover:text-green-700 dark:hover:text-green-400 transition-colors"
+            >
+              «
+            </button>
             <button
               onClick={() => setPage((p) => p - 1)}
               disabled={page === 0}
-              className="px-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:border-green-500 dark:hover:border-green-600 hover:text-green-700 dark:hover:text-green-400 transition-colors"
+              className="px-3 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:border-green-500 dark:hover:border-green-600 hover:text-green-700 dark:hover:text-green-400 transition-colors"
             >
-              ← Précédent
+              ‹
             </button>
-            <span className="text-sm text-gray-400 dark:text-gray-500">
-              {page + 1} / {data.totalPages}
-            </span>
+
+            {Array.from({ length: data.totalPages }, (_, i) => i)
+              .filter((i) => Math.abs(i - page) <= 1)
+              .map((i) => (
+                <button
+                  key={i}
+                  onClick={() => setPage(i)}
+                  className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
+                    i === page
+                      ? "bg-green-700 dark:bg-green-700 text-white border-green-700"
+                      : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-green-500 hover:text-green-700"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={page + 1 >= data.totalPages}
-              className="px-4 py-2 text-sm border border-gray-200 dark:border-gray-700 rounded-xl text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:border-green-500 dark:hover:border-green-600 hover:text-green-700 dark:hover:text-green-400 transition-colors"
+              className="px-3 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:border-green-500 dark:hover:border-green-600 hover:text-green-700 dark:hover:text-green-400 transition-colors"
             >
-              Suivant →
+              ›
+            </button>
+            <button
+              onClick={() => setPage(data.totalPages - 1)}
+              disabled={page + 1 >= data.totalPages}
+              className="px-3 py-1.5 text-xs border border-gray-200 dark:border-gray-700 rounded-lg text-gray-600 dark:text-gray-400 disabled:opacity-30 hover:border-green-500 dark:hover:border-green-600 hover:text-green-700 dark:hover:text-green-400 transition-colors"
+            >
+              »
             </button>
           </div>
         )}
