@@ -11,6 +11,8 @@ const STATUS_LABELS: Record<string, string> = {
   REJECTED: "Refusé",
 };
 
+const hasEmoji = (str: string) => /\p{So}|\p{Cs}/u.test(str);
+
 interface Props {
   onClose: () => void;
   editTarget: Application | null;
@@ -44,13 +46,27 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
     const newErrors: Record<string, string> = {};
     if (!form.company.trim())
       newErrors.company = "L'entreprise est obligatoire";
+    else if (hasEmoji(form.company))
+      newErrors.company = "Les emojis ne sont pas autorisés";
+
     if (!form.jobTitle.trim()) newErrors.jobTitle = "Le poste est obligatoire";
+    else if (hasEmoji(form.jobTitle))
+      newErrors.jobTitle = "Les emojis ne sont pas autorisés";
+
     if (!form.status) newErrors.status = "Le statut est obligatoire";
+
     if (!form.appliedAt) newErrors.appliedAt = "La date est obligatoire";
+    else if (form.appliedAt > new Date().toISOString().split("T")[0])
+      newErrors.appliedAt = "La date ne peut pas être dans le futur";
+
     if (form.offerUrl && !/^https?:\/\/.+/.test(form.offerUrl))
       newErrors.offerUrl = "L'URL doit commencer par http:// ou https://";
+
     if (form.notes && form.notes.length > 500)
       newErrors.notes = "Maximum 500 caractères";
+    else if (form.notes && hasEmoji(form.notes))
+      newErrors.notes = "Les emojis ne sont pas autorisés";
+
     return newErrors;
   };
 
@@ -148,13 +164,14 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
-                Date
+                Date de candidature
               </label>
               <input
                 type="date"
                 name="appliedAt"
                 value={form.appliedAt}
                 onChange={handleChange}
+                max={new Date().toISOString().split("T")[0]}
                 className={inputClass("appliedAt")}
               />
               {errors.appliedAt && (
@@ -180,15 +197,23 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1.5">
-              Notes
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Notes
+              </label>
+              <span
+                className={`text-xs ${form.notes && form.notes.length > 500 ? "text-red-500" : "text-gray-400 dark:text-gray-500"}`}
+              >
+                {form.notes?.length ?? 0} / 500
+              </span>
+            </div>
             <textarea
               name="notes"
               value={form.notes}
               onChange={handleChange}
               rows={3}
               placeholder="Notes personnelles..."
+              maxLength={500}
               className={`${inputClass("notes")} resize-none`}
             />
             {errors.notes && (

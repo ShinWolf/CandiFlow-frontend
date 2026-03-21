@@ -16,14 +16,19 @@ const RegisterPage = () => {
   const [globalError, setGlobalError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const hasEmoji = (str: string) => /\p{Extended_Pictographic}/u.test(str);
+  const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!email) newErrors.email = "L'email est obligatoire";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    else if (!emailRegex.test(email))
       newErrors.email = "L'email n'est pas valide";
     if (!username) newErrors.username = "Le pseudo est obligatoire";
     else if (username.length < 3 || username.length > 30)
       newErrors.username = "Entre 3 et 30 caractères";
+    else if (hasEmoji(username))
+      newErrors.username = "Les emojis ne sont pas autorisés";
     if (!password) newErrors.password = "Le mot de passe est obligatoire";
     else if (password.length < 8) newErrors.password = "Au moins 8 caractères";
     if (!confirmPassword)
