@@ -24,7 +24,7 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
     jobTitle: editTarget?.jobTitle ?? "",
     status: editTarget?.status ?? "APPLIED",
     notes: editTarget?.notes ?? "",
-    offerUrl: editTarget?.offerUrl ?? "",
+    offerUrl: editTarget?.offerUrl?.toLowerCase() ?? "",
     appliedAt: editTarget?.appliedAt ?? new Date().toISOString().split("T")[0],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -39,7 +39,8 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >,
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const value = e.target.name === "offerUrl" ? e.target.value.toLowerCase() : e.target.value;
+    setForm({ ...form, [e.target.name]: value });
   };
 
   const validate = () => {
@@ -190,6 +191,7 @@ const ApplicationModal = ({ onClose, editTarget }: Props) => {
               onChange={handleChange}
               placeholder="https://..."
               className={inputClass("offerUrl")}
+              autoCapitalize="none"
             />
             {errors.offerUrl && (
               <p className="text-red-500 text-xs mt-1">{errors.offerUrl}</p>
